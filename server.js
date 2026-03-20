@@ -8,12 +8,13 @@ app.use(cors());
 
 // Create database connection
 const db = mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "kobe9999",   // use the same root password you type in Workbench
-  database: "oer_esports",
-  port: 3306                        // change if your MySQL is running on another port
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT
 });
+
 
 
 // ------------------ ROUTES ------------------
