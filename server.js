@@ -1,6 +1,7 @@
 const express = require("express");
 const mysql = require("mysql2/promise");
 const cors = require("cors");
+const bcrypt = require("bcrypt");
 
 const app = express();
 app.use(express.json());
@@ -15,11 +16,8 @@ const db = mysql.createPool({
   port: process.env.DB_PORT
 });
 
-
-
 // ------------------ ROUTES ------------------
 
-// Login route
 // LOGIN
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
@@ -47,10 +45,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-
 // REGISTER
-const bcrypt = require("bcrypt");
-
 app.post("/register", async (req, res) => {
   const { username, password } = req.body;
 
@@ -74,8 +69,6 @@ app.post("/register", async (req, res) => {
     }
   }
 });
-
-
 
 // ------------------ START SERVER ------------------
 app.listen(3001, () => {
