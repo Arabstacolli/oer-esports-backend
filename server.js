@@ -29,12 +29,15 @@ app.post("/login", async (req, res) => {
   }
 
   try {
-    const [rows] = await db.query(
-      "SELECT * FROM users WHERE username = ? AND password = ?",
-      [username.trim(), password.trim()]
-    );
+    const [rows] = await db.query("SELECT * FROM users WHERE username = ?", [username.trim()]);
     if (rows.length > 0) {
-      res.json({ success: true, user: rows[0] });
+      const user = rows[0];
+      const match = await bcrypt.compare(password.trim(), user.password);
+      if (match) {
+        res.json({ success: true, user });
+      } else {
+        res.json({ success: false, message: "Invalid credentials" });
+      }
     } else {
       res.json({ success: false, message: "Invalid credentials" });
     }
@@ -44,7 +47,10 @@ app.post("/login", async (req, res) => {
   }
 });
 
+
 // REGISTER
+const bcrypt = require("bcrypt");
+
 app.post("/register", async (req, res) => {
   const { username, password } = req.body;
 
@@ -53,9 +59,10 @@ app.post("/register", async (req, res) => {
   }
 
   try {
+    const hashedPassword = await bcrypt.hash(password.trim(), 10);
     await db.query("INSERT INTO users (username, password) VALUES (?, ?)", [
       username.trim(),
-      password.trim(),
+      hashedPassword,
     ]);
     res.json({ success: true });
   } catch (err) {
